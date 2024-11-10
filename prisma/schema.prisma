@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model EventStatus {
+  status_name String  @id
+  description String?
+  events      Event[]
+}
+
+model Sport {
+  official_name String   @id
+  description   String?
+  events        Event[]
+  players       Player[]
+  teams         Team[]
+}
+
+model Event {
+  event_id       Int                  @id @default(autoincrement())
+  date           DateTime
+  sport_name     String
+  status_name    String
+  season         Int
+  home_team_name String
+  away_team_name String
+  away_team      Team                 @relation("AwayTeam", fields: [away_team_name], references: [official_name])
+  home_team      Team                 @relation("HomeTeam", fields: [home_team_name], references: [official_name])
+  sport          Sport                @relation(fields: [sport_name], references: [official_name])
+  status         EventStatus          @relation(fields: [status_name], references: [status_name])
+  event_result   FootballEventResult?
+}
+
+model FootballEventResult {
+  football_event_result_id Int    @id @default(autoincrement())
+  home_goals               Int
+  away_goals               Int
+  winner                   String
+  event_id                 Int    @unique
+  event                    Event  @relation(fields: [event_id], references: [event_id])
+}
+
+model Team {
+  official_name String   @id
+  name          String
+  venue_id      Int
+  slug          String   @unique
+  sport_name    String
+  abbreviation  String
+  country_code  String
+  away_events   Event[]  @relation("AwayTeam")
+  home_events   Event[]  @relation("HomeTeam")
+  players       Player[]
+  country       Country  @relation(fields: [country_code], references: [country_code])
+  sport         Sport    @relation(fields: [sport_name], references: [official_name])
+  venue         Venue    @relation(fields: [venue_id], references: [venue_id])
+}
+
+model Country {
+  country_code String @id
+  full_name    String
+  teams        Team[]
+}
+
+model Venue {
+  venue_id Int    @id @default(autoincrement())
+  name     String
+  address  String @unique
+  teams    Team[]
+}
+
+model Player {
+  player_id    Int      @id @default(autoincrement())
+  name         String
+  surname      String
+  birthday     DateTime
+  team_name    String
+  sport_played String
+  sport        Sport    @relation(fields: [sport_played], references: [official_name])
+  team         Team     @relation(fields: [team_name], references: [official_name])
+}
