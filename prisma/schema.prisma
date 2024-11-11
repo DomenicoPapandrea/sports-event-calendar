@@ -14,7 +14,7 @@ datasource db {
 }
 
 model EventStatus {
-  status_name String  @id
+  status      String  @id
   description String?
   events      Event[]
 }
@@ -30,15 +30,15 @@ model Sport {
 model Event {
   event_id       Int                  @id @default(autoincrement())
   date           DateTime
-  sport_name     String
-  status_name    String
+  sport          String
+  status         String
   season         Int
   home_team_name String
   away_team_name String
   away_team      Team                 @relation("AwayTeam", fields: [away_team_name], references: [official_name])
   home_team      Team                 @relation("HomeTeam", fields: [home_team_name], references: [official_name])
-  sport          Sport                @relation(fields: [sport_name], references: [official_name])
-  status         EventStatus          @relation(fields: [status_name], references: [status_name])
+  sportName      Sport                @relation(fields: [sport], references: [official_name])
+  statusName     EventStatus          @relation(fields: [status], references: [status])
   event_result   FootballEventResult?
 }
 
@@ -56,14 +56,14 @@ model Team {
   name          String
   venue_id      Int
   slug          String   @unique
-  sport_name    String
+  sport       String
   abbreviation  String
   country_code  String
   away_events   Event[]  @relation("AwayTeam")
   home_events   Event[]  @relation("HomeTeam")
   players       Player[]
   country       Country  @relation(fields: [country_code], references: [country_code])
-  sport         Sport    @relation(fields: [sport_name], references: [official_name])
+  sportName     Sport    @relation(fields: [sport], references: [official_name])
   venue         Venue    @relation(fields: [venue_id], references: [venue_id])
 }
 
