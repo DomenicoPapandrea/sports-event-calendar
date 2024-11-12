@@ -37,6 +37,9 @@ next-env.d.ts
 
 # Prisma
 /prisma/*.db
-/prisma/migrations/dev/
+/prisma/migrations/*
 prisma/db.sqlite
 prisma/db.sqlite-journal
+
+# vscode  
+.vscode/    
